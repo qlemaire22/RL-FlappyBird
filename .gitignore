@@ -102,3 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# PyGame-Learning-Environment
+PyGame-Learning-Environment
+PyGame-Learning-Environment/*
