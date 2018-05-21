@@ -9,6 +9,8 @@ from ple import PLE
 from config import *
 from model import Network
 import prepossessing
+import pygame
+import os
 
 
 def play():
@@ -30,7 +32,7 @@ def play():
     s_t = prepossessing.transform_image(p.getScreenRGB())
 
     saver = tf.train.Saver()
-    sess.run(tf.initialize_all_variables())
+    sess.run(tf.global_variables_initializer())
     checkpoint = tf.train.get_checkpoint_state("../saved_networks")
     if checkpoint and checkpoint.model_checkpoint_path:
         saver.restore(sess, checkpoint.model_checkpoint_path)
