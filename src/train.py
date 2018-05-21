@@ -10,9 +10,8 @@ import argparse
 from config import *
 import prepossessing
 from model import Network
-
 import os
-os.environ["SDL_VIDEODRIVER"] = "dummy"
+
 
 
 def train(resume):
@@ -167,7 +166,12 @@ if __name__ == "__main__":
 
     parser.add_argument('--resume', default=0,
                         help="int, 1 if you want to continue a previous training else 0.", type=int)
+    parser.add_argument('--video', default=1,
+                        help="int, 1 if you want to continue a previous training else 0.", type=int)
 
     args = parser.parse_args()
+
+    if args.video == 0:
+        os.environ["SDL_VIDEODRIVER"] = "dummy"
 
     train(args.resume)
