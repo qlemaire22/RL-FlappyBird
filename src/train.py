@@ -162,9 +162,9 @@ def train(resume):
         # save progress every 10000 iterations
         if t % 10000 == 0:
             saver.save(sess, 'pyth/' + "bird" + '-dqn', global_step=t)
-            np.save(np.array(Qs), "q.npz")
-            np.save(np.array(best_rewards), "best.npz")
-            np.save(np.array(rewards_game), "game_rewards.npz")
+            np.save("q.npz", np.array(Qs))
+            np.save("best.npz", np.array(best_rewards))
+            np.save("game_rewards.npz", np.array(rewards_game))
 
 
         # print info
