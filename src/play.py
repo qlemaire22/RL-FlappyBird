@@ -4,14 +4,11 @@ import sys
 import random
 import numpy as np
 from collections import deque
-from ple.games.flappybird import FlappyBird
 from ple import PLE
 from config import *
 from model import Network
 import prepossessing
-import pygame
-import os
-
+import flappybird
 
 def play():
     sess = tf.InteractiveSession()
@@ -19,7 +16,8 @@ def play():
     net = Network()
 
     # open up a game state to communicate with emulator
-    game = FlappyBird()
+    game = flappybird.prepare_game()
+
     p = PLE(game, fps=30, display_screen=True)
     p.init()
     reward = 0.0
@@ -29,7 +27,7 @@ def play():
     actions = p.getActionSet()
     p.act(actions[1])
 
-    s_t = prepossessing.transform_image(p.getScreenRGB())
+    s_t = prepossessing.transform_image(p.getScreenRGB
 
     saver = tf.train.Saver()
     sess.run(tf.global_variables_initializer())
@@ -71,7 +69,8 @@ def play():
         t += 1
 
         print("TIMESTEP", t, "/ ACTION", action_index,
-              "/ REWARD", r_t, "/ Q_MAX %e" % np.max(readout_t))
+              "/ REWARD", r_t, "/ Q_MAX %e" % np.max(readout_t),
+              " / SCORE", p.score())
 
 
 if __name__ == "__main__":
