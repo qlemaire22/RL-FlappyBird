@@ -105,7 +105,7 @@ def train(resume):
         if r_t == -5:
             nb_reward_sum += 1
             reward_sum += actual_reward
-            if nb_reward_sum % 10 == 0
+            if nb_reward_sum % 10 == 0:
                 rewards_game.append(reward_sum / 10.0)
             actual_reward = 0
 
