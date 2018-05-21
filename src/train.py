@@ -54,6 +54,13 @@ def train(resume):
     best_reward = 0
     actual_reward = 0
 
+    best_rewards = []
+    Qs = []
+    rewards_game = []
+
+    reward_sum = 0
+    nb_reward_sum = 0
+
     epsilon = INITIAL_EPSILON
     t = 0
 
@@ -96,7 +103,12 @@ def train(resume):
             total_reward += 1
 
         if r_t == -5:
+            nb_reward_sum += 1
+            reward_sum += actual_reward
+            if nb_reward_sum % 10 == 0
+                rewards_game.append(reward_sum / 10.0)
             actual_reward = 0
+
         elif r_t > 0:
             actual_reward += 1
 
@@ -143,9 +155,17 @@ def train(resume):
         s_t = s_t1
         t += 1
 
+        if t % 100 == 0:
+            Qs.append(np.max(readout_t))
+            best_rewards.append(best_reward)
+
         # save progress every 10000 iterations
         if t % 10000 == 0:
             saver.save(sess, 'pyth/' + GAME + '-dqn', global_step=t)
+            np.save(Qs, "q.npz")
+            np.save(best_rewards, "best.npz")
+            np.save(rewards_game, "game_rewards.npz")
+
 
         # print info
         state = ""
