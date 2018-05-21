@@ -134,7 +134,7 @@ def train(resume):
             s_j1_batch = [d[3] for d in minibatch]
 
             y_batch = []
-            readout_j1_batch = net.readout.eval(feed_dict={s: s_j1_batch})
+            readout_j1_batch = net.readout.eval(feed_dict={net.s: s_j1_batch})
             for i in range(0, len(minibatch)):
                 terminal = minibatch[i][4]
                 # if terminal, only equals reward
