@@ -2,7 +2,7 @@ import tensorflow as tf
 from config import *
 
 class Network():
-    def __init__(self):
+    def __init__(self, img_size):
         self.a = tf.placeholder("float", [None, ACTIONS])
         self.y = tf.placeholder("float", [None])
 
@@ -16,14 +16,11 @@ class Network():
         W_conv3 = weight_variable([3, 3, 64, 64])
         b_conv3 = bias_variable([64])
 
-        W_fc1 = weight_variable([1600, 512])
-        b_fc1 = bias_variable([512])
-
         W_fc2 = weight_variable([512, ACTIONS])
         b_fc2 = bias_variable([ACTIONS])
 
         # input layer
-        self.s = tf.placeholder("float", [None, 80, 80, 4])
+        self.s = tf.placeholder("float", [None, img_size, img_size, 4])
 
         # hidden layers
         h_conv1 = tf.nn.relu(conv2d(self.s, W_conv1, 4) + b_conv1)
@@ -33,7 +30,14 @@ class Network():
 
         h_conv3 = tf.nn.relu(conv2d(h_conv2, W_conv3, 1) + b_conv3)
 
-        h_conv3_flat = tf.reshape(h_conv3, [-1, 1600])
+        _, a, b, c = h_conv3.shape
+
+        size = int(a*b*c)
+
+        W_fc1 = weight_variable([size, 512])
+        b_fc1 = bias_variable([512])
+
+        h_conv3_flat = tf.reshape(h_conv3, [-1, size])
 
         self.h_fc1 = tf.nn.relu(tf.matmul(h_conv3_flat, W_fc1) + b_fc1)
 

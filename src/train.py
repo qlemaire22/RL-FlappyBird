@@ -12,11 +12,11 @@ from model import Network
 import os
 import flappybird
 
-def train(resume, reward_type):
+def train(resume, reward_type, use_memory, size_image):
     sess = tf.InteractiveSession()
 
-
-    net = Network()
+    img_size = size_image
+    net = Network(img_size)
 
     train_step = tf.train.AdamOptimizer(LEARNING_RATE).minimize(net.cost())
 
@@ -45,7 +45,7 @@ def train(resume, reward_type):
     actions = p.getActionSet()
     p.act(actions[1])
 
-    s_t = prepossessing.transform_image(p.getScreenRGB())
+    s_t = prepossessing.transform_image(p.getScreenRGB(), img_size)
 
     # start training
 
@@ -62,9 +62,6 @@ def train(resume, reward_type):
 
     epsilon = INITIAL_EPSILON
     t = 0
-
-    train_writer = tf.summary.FileWriter('./logs/1/train ', sess.graph)
-
 
     while t < MAX_ITE:
         if p.game_over():
@@ -141,12 +138,17 @@ def train(resume, reward_type):
                 r_t = 1
 
 
-        s_t1 = prepossessing.transform_image_stacked(p.getScreenRGB(), s_t)
+        s_t1 = prepossessing.transform_image_stacked(p.getScreenRGB(), s_t, img_size)
 
         # store the transition in D
         D.append((s_t, a_t, r_t, s_t1, terminal))
-        if len(D) > REPLAY_MEMORY:
-            D.popleft()
+
+        if use_memory == 1:
+            if len(D) > REPLAY_MEMORY:
+                D.popleft()
+        else:
+            if len(D) > BATCH:
+                D.popleft()
 
         # only train if done observing
         if t > OBSERVE:
@@ -171,13 +173,11 @@ def train(resume, reward_type):
                                    np.max(readout_j1_batch[i]))
 
             # perform gradient step
-            merge = tf.summary.merge_all()
-            summary = train_step.run([merge], feed_dict={
+            train_step.run(feed_dict={
                 net.y: y_batch,
                 net.a: a_batch,
                 net.s: s_j_batch}
             )
-            train_writer.add_summary(summary, counter)
 
 
         # update the old values
@@ -219,10 +219,14 @@ if __name__ == "__main__":
                         help="int, 1 if you want to continue a previous training else 0.", type=int)
     parser.add_argument('--reward', default=0,
                         help="int, 1 if you want a modified reward else 0.", type=int)
+    parser.add_argument('--memory', default=1,
+                        help="int, 1 if you want to use a memory else 0.", type=int)
+    parser.add_argument('--size', default=80,
+                        help="reshape size of the images, default 80", type=int)
 
     args = parser.parse_args()
 
     if args.video == 0:
         os.environ["SDL_VIDEODRIVER"] = "dummy"
 
-    train(args.resume, args.reward)
+    train(args.resume, args.reward, args.memory, args.size)
