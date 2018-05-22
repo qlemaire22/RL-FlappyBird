@@ -4,7 +4,6 @@ import sys
 import random
 import numpy as np
 from collections import deque
-from ple.games.flappybird import FlappyBird
 from ple import PLE
 import argparse
 from config import *

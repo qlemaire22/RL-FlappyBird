@@ -26,7 +26,7 @@ def play():
     actions = p.getActionSet()
     p.act(actions[1])
 
-    s_t = prepossessing.transform_image(p.getScreenRGB
+    s_t = prepossessing.transform_image(p.getScreenRGB())
 
     saver = tf.train.Saver()
     sess.run(tf.global_variables_initializer())
