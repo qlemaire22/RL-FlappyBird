@@ -14,8 +14,9 @@ import os
 
 
 
-def train(resume):
+def train(resume, reward_type):
     sess = tf.InteractiveSession()
+
 
     net = Network()
 
@@ -64,6 +65,9 @@ def train(resume):
     epsilon = INITIAL_EPSILON
     t = 0
 
+    train_writer = tf.summary.FileWriter('./logs/1/train ', sess.graph)
+
+
     while t < MAX_ITE:
         if p.game_over():
             p.reset_game()
@@ -97,23 +101,47 @@ def train(resume):
         else:
             action = 0
 
-        r_t = p.act(actions[action])
+        if reward_type == 0:
 
-        if r_t != 0 and r_t != -5:
-            total_reward += 1
+            r_t = p.act(actions[action])
 
-        if r_t == -5:
-            nb_reward_sum += 1
-            reward_sum += actual_reward
-            if nb_reward_sum % 10 == 0:
-                rewards_game.append(reward_sum / 10.0)
-            actual_reward = 0
+            if r_t == -5:
+                nb_reward_sum += 1
+                reward_sum += actual_reward
+                if nb_reward_sum % 10 == 0:
+                    rewards_game.append(reward_sum / 10.0)
+                    reward_sum = 0
+                actual_reward = 0
 
-        elif r_t > 0:
-            actual_reward += 1
+            elif r_t > 0:
+                actual_reward += 1
+                total_reward += 1
 
-        if actual_reward > best_reward:
-            best_reward = actual_reward
+            if actual_reward > best_reward:
+                best_reward = actual_reward
+
+        else:
+
+            r_t = p.act(actions[action])
+
+            if r_t == -5:
+                nb_reward_sum += 1
+                reward_sum += actual_reward
+                if nb_reward_sum % 10 == 0:
+                    rewards_game.append(reward_sum / 10.0)
+                    reward_sum = 0
+                actual_reward = 0
+
+            elif r_t > 0:
+                actual_reward += 1
+                total_reward += 1
+
+            if actual_reward > best_reward:
+                best_reward = actual_reward
+
+            if r_t == 0:
+                r_t = 1
+
 
         s_t1 = prepossessing.transform_image_stacked(p.getScreenRGB(), s_t)
 
@@ -145,11 +173,14 @@ def train(resume):
                                    np.max(readout_j1_batch[i]))
 
             # perform gradient step
-            train_step.run(feed_dict={
+            merge = tf.summary.merge_all()
+            summary = train_step.run([merge], feed_dict={
                 net.y: y_batch,
                 net.a: a_batch,
                 net.s: s_j_batch}
             )
+            train_writer.add_summary(summary, counter)
+
 
         # update the old values
         s_t = s_t1
@@ -188,10 +219,12 @@ if __name__ == "__main__":
                         help="int, 1 if you want to continue a previous training else 0.", type=int)
     parser.add_argument('--video', default=1,
                         help="int, 1 if you want to continue a previous training else 0.", type=int)
+    parser.add_argument('--reward', default=0,
+                        help="int, 1 if you want a modified reward else 0.", type=int)
 
     args = parser.parse_args()
 
     if args.video == 0:
         os.environ["SDL_VIDEODRIVER"] = "dummy"
 
-    train(args.resume)
+    train(args.resume, args.reward)

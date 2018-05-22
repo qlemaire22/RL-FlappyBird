@@ -40,6 +40,7 @@ class Network():
         # readout layer
         self.readout = tf.matmul(self.h_fc1, W_fc2) + b_fc2
 
+
         self.readout_action = tf.reduce_sum(
             tf.multiply(self.readout, self.a), reduction_indices=1)
 
