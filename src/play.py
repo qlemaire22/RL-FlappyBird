@@ -17,7 +17,6 @@ def play():
 
     # open up a game state to communicate with emulator
     game = flappybird.prepare_game()
-
     p = PLE(game, fps=30, display_screen=True)
     p.init()
     reward = 0.0

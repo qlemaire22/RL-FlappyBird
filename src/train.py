@@ -11,8 +11,7 @@ from config import *
 import prepossessing
 from model import Network
 import os
-
-
+import flappybird
 
 def train(resume):
     sess = tf.InteractiveSession()
@@ -22,7 +21,7 @@ def train(resume):
     train_step = tf.train.AdamOptimizer(LEARNING_RATE).minimize(net.cost())
 
     # open up a game state to communicate with emulator
-    game = FlappyBird()
+    game = flappybird.prepare_game()
     p = PLE(game, fps=30, display_screen=True)
     p.init()
     reward = 0.0
