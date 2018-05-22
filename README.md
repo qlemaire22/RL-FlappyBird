@@ -15,6 +15,7 @@ Project of Deep Learning in Data science (KTH DD2424):
 5. `cd PyGame-Learning-Environment`
 6. `sudo pip install -e . && cd ..`
 7. `sudo pip install future tensorflow opencv-python` (You can choose between `tensorflow` and `tensorflow-gpu`)
+8. `pip install pygame`
 
 ### Run training
 
