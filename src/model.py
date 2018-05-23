@@ -51,7 +51,51 @@ class Network():
     def cost(self):
         return tf.reduce_mean(tf.square(self.y - self.readout_action))
 
+class NetworkOld():
+    def __init__(self, img_size):
+        self.a = tf.placeholder("float", [None, ACTIONS])
+        self.y = tf.placeholder("float", [None])
 
+        # network weights
+        W_conv1 = weight_variable([8, 8, 4, 32])
+        b_conv1 = bias_variable([32])
+
+        W_conv2 = weight_variable([4, 4, 32, 64])
+        b_conv2 = bias_variable([64])
+
+        W_conv3 = weight_variable([3, 3, 64, 64])
+        b_conv3 = bias_variable([64])
+
+        W_fc1 = weight_variable([1600, 512])
+        b_fc1 = bias_variable([512])
+
+        W_fc2 = weight_variable([512, ACTIONS])
+        b_fc2 = bias_variable([ACTIONS])
+
+        # input layer
+        self.s = tf.placeholder("float", [None, 80, 80, 4])
+
+        # hidden layers
+        h_conv1 = tf.nn.relu(conv2d(self.s, W_conv1, 4) + b_conv1)
+        h_pool1 = max_pool_2x2(h_conv1)
+
+        h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2, 2) + b_conv2)
+
+        h_conv3 = tf.nn.relu(conv2d(h_conv2, W_conv3, 1) + b_conv3)
+
+        h_conv3_flat = tf.reshape(h_conv3, [-1, 1600])
+
+        self.h_fc1 = tf.nn.relu(tf.matmul(h_conv3_flat, W_fc1) + b_fc1)
+
+        # readout layer
+        self.readout = tf.matmul(self.h_fc1, W_fc2) + b_fc2
+
+
+        self.readout_action = tf.reduce_sum(
+            tf.multiply(self.readout, self.a), reduction_indices=1)
+
+    def cost(self):
+        return tf.reduce_mean(tf.square(self.y - self.readout_action))
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev = 0.01)

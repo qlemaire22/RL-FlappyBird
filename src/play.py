@@ -6,7 +6,7 @@ import numpy as np
 from collections import deque
 from ple import PLE
 from config import *
-from model import Network
+from model import Network, NetworkOld
 import preprocessing
 import flappybird
 import argparse
@@ -14,8 +14,8 @@ import argparse
 def play(size_image):
     sess = tf.InteractiveSession()
 
-    img_size = size_image
-    net = Network(img_size)
+    img_size = 80
+    net = NetworkOld(img_size)
 
     # open up a game state to communicate with emulator
     game = flappybird.prepare_game()
