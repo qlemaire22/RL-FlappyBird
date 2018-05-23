@@ -7,13 +7,15 @@ from collections import deque
 from ple import PLE
 from config import *
 from model import Network
-import prepossessing
+import preprocessing
 import flappybird
+import argparse
 
-def play():
+def play(size_image):
     sess = tf.InteractiveSession()
 
-    net = Network()
+    img_size = size_image
+    net = Network(img_size)
 
     # open up a game state to communicate with emulator
     game = flappybird.prepare_game()
@@ -26,7 +28,7 @@ def play():
     actions = p.getActionSet()
     p.act(actions[1])
 
-    s_t = prepossessing.transform_image(p.getScreenRGB())
+    s_t = preprocessing.transform_image(p.getScreenRGB(), img_size)
 
     saver = tf.train.Saver()
     sess.run(tf.global_variables_initializer())
@@ -61,11 +63,15 @@ def play():
             action = 0
         r_t = p.act(actions[action])
 
-        s_t1 = prepossessing.transform_image_stacked(p.getScreenRGB(), s_t)
+        s_t1 = preprocessing.transform_image_stacked(p.getScreenRGB(), s_t, img_size)
 
         # update the old values
         s_t = s_t1
         t += 1
+
+        if p.score() >= 3:
+            preprocessing.quentin(p.getScreenRGB(), s_t, img_size)
+            return
 
         print("TIMESTEP", t, "/ ACTION", action_index,
               "/ REWARD", r_t, "/ Q_MAX %e" % np.max(readout_t),
@@ -73,4 +79,11 @@ def play():
 
 
 if __name__ == "__main__":
-    play()
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--size', default=80,
+                        help="reshape size of the images, default 80", type=int)
+
+    args = parser.parse_args()
+
+    play(args.size)

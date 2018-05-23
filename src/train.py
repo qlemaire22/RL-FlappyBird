@@ -7,7 +7,7 @@ from collections import deque
 from ple import PLE
 import argparse
 from config import *
-import prepossessing
+import prepocessing
 from model import Network
 import os
 import flappybird
@@ -45,7 +45,7 @@ def train(resume, reward_type, use_memory, size_image):
     actions = p.getActionSet()
     p.act(actions[1])
 
-    s_t = prepossessing.transform_image(p.getScreenRGB(), img_size)
+    s_t = preprocessing.transform_image(p.getScreenRGB(), img_size)
 
     # start training
 
@@ -138,7 +138,7 @@ def train(resume, reward_type, use_memory, size_image):
                 r_t = 1
 
 
-        s_t1 = prepossessing.transform_image_stacked(p.getScreenRGB(), s_t, img_size)
+        s_t1 = preprocessing.transform_image_stacked(p.getScreenRGB(), s_t, img_size)
 
         # store the transition in D
         D.append((s_t, a_t, r_t, s_t1, terminal))
