@@ -69,10 +69,6 @@ def play(size_image):
         s_t = s_t1
         t += 1
 
-        if p.score() >= 3:
-            preprocessing.quentin(p.getScreenRGB(), s_t, img_size)
-            return
-
         print("TIMESTEP", t, "/ ACTION", action_index,
               "/ REWARD", r_t, "/ Q_MAX %e" % np.max(readout_t),
               " / SCORE", p.score())

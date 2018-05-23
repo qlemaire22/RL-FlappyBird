@@ -11,7 +11,6 @@ def transform_image_stacked(img, s_t, img_size):
     s_t1 = np.append(x_t1, s_t[:, :, :3], axis=2)
     return s_t1
 
-
 def transform_image(img, img_size):
     x_t = img[0:279, 0:410]
 
